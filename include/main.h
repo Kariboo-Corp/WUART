@@ -4,11 +4,11 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-const char* SSID = "UDP_DRONE_1";
-const char* PSWD = "UDP_DRONE_1";
+const char* SSID = "DRONE_1";
+const char* PSWD = "DRONE_1";
 
 // debug log, set to 1 to enable
-#define ENABLE_DEBUG_LOG 0
+#define ENABLE_DEBUG_LOG 1
   
 // ethernet config
 const IPAddress local_IP(192, 168, 4, 1);
@@ -27,6 +27,8 @@ const int rs_config = SERIAL_8N1;
 // global objects
 WiFiServer server;
 byte buff[BUFFER_SIZE];
+
+void start_ota();
   
 void debug_log(char* str) {
 #if ENABLE_DEBUG_LOG == 1
