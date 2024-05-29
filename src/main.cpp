@@ -5,17 +5,39 @@
 #include "main.h"
   
 void setup() {
+
+  delay(3000); // let the debugger catch up the stream
+
 // init rs port
   Serial.begin(baudrate, rs_config);
   Serial2.begin(baudrate, rs_config);
 
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP(SSID, PSWD);
+  WiFi.begin(SSID, PSWD); // we try to connect to the known wifi first.
+
+  Serial.print("Trying to connect to : ");
+  Serial.println(SSID);
+
+  unsigned long start_time = millis();
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+
+    if ((millis() - start_time) > TIMEOUT)
+    {
+      Serial.println("Unable to connect to the wifi. Creating a network...");
+      createAP();
+
+      break;
+    }
+  }
+  
 
   // init wifi connection
-  if (!WiFi.softAPConfig(local_IP, local_IP, subnet)) {
-        debug_log("Failed to configure network settings");
-  }
+  // if (!WiFi.softAPConfig(local_IP, local_IP, subnet)) {
+  //       debug_log("Failed to configure network settings");
+  // }
   
   #if ENABLE_DEBUG_LOG == 1
     Serial.println("connected to WiFi");
@@ -23,7 +45,7 @@ void setup() {
     Serial.println(WiFi.localIP());
   #endif
 
-   delay(1000);
+  delay(1000);
   
   //start server
    server = WiFiServer(serverPort);
@@ -46,7 +68,7 @@ void loop() {
   
   debug_log("client found");
   while (client.connected()) {
-  int size = 0;
+    int size = 0;
     
     // read data from wifi client and send to serial
     while ((size = client.available())) {
@@ -97,4 +119,31 @@ void start_ota() {
     });
 
   ArduinoOTA.begin();
+}
+
+String get_mac_addr( void ) // we just need the last two bytes
+{
+  uint8_t mac[6];
+
+  WiFi.macAddress(mac);
+  
+  char macStr[18];
+  snprintf(macStr, sizeof(macStr), "%02X%02X", mac[4], mac[5]);
+  
+  return String(macStr);
+}
+
+void createAP( void )
+{
+  // Générer un SSID basé sur l'adresse MAC
+  String macAddress = get_mac_addr();
+  String ap_ssid = "Kariboo-" + macAddress;
+  const char* ap_password = "kariboo_2024!";
+
+  WiFi.softAP(ap_ssid.c_str(), ap_password);
+  Serial.println("Access point created.");
+  Serial.print("SSID: ");
+  Serial.println(ap_ssid);
+  Serial.print("IP: ");
+  Serial.println(WiFi.softAPIP());
 }

@@ -4,11 +4,14 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+// Fallback SSID / PASSWORD
+
 const char* SSID = "DRONE_1";
-const char* PSWD = "DRONE_1";
+const char* PSWD = "rqndo;8pqssphrqse";
 
 // debug log, set to 1 to enable
 #define ENABLE_DEBUG_LOG 1
+#define TIMEOUT 10000
   
 // ethernet config
 const IPAddress local_IP(192, 168, 4, 1);
@@ -29,6 +32,9 @@ WiFiServer server;
 byte buff[BUFFER_SIZE];
 
 void start_ota();
+
+String get_mac_addr( void );
+void createAP( void );
   
 void debug_log(char* str) {
 #if ENABLE_DEBUG_LOG == 1
