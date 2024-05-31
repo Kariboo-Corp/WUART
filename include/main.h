@@ -6,8 +6,8 @@
 
 // Fallback SSID / PASSWORD
 
-const char* SSID = "DRONE_1";
-const char* PSWD = "rqndo;8pqssphrqse";
+const char* SSID = "drone_network";
+const char* PSWD = "Codra123";
 
 // debug log, set to 1 to enable
 #define ENABLE_DEBUG_LOG 1
